@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Checkout - Victorem</title>
+  <link rel="icon" type="image/x-icon" href="imagenes/logo.png">
+  <link rel="stylesheet" href="catalogo.css">
+  <link rel="stylesheet" href="checkout.css">
+</head>
+
+<body>
+  <!-- Header -->
+  <header>
+    <div class="container header-container">
+      <div class="logo-container">
+        <a href="index.html" style="display:flex; align-items:center; text-decoration:none; color:inherit;">
+          <img src="imagenes/logo.png" alt="Victorem Logo" class="logo">
+          <div class="logo-text">VICTOREM</div>
+        </a>
+      </div>
+      <nav>
+        <ul>
+          <li><a href="index.html">Inicio</a></li>
+          <li><a href="catalogo.html">Catálogo</a></li>
+          <li><a href="personalizacion.html">Personaliza</a></li>
+          <li><a href="historia.html">Historia</a></li>
+          <li><a href="contacto.html">Contacto</a></li>
+          <li><button id="cart-icon" style="font-size: 1.5em; background: none; border: none; cursor: pointer;">🛒</button></li>
+          <li id="auth-nav">
+            <!-- El contenido de este elemento se actualizará dinámicamente -->
+          </li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="hero"
+    style="background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('imagenes/textura.png') center/cover no-repeat;">
+    <div class="container">
+      <h1>Finalizar Compra</h1>
+      <p>Completa tus datos para procesar tu pedido.</p>
+    </div>
+  </section>
+
+  <!-- Contenido del Checkout -->
+  <section class="checkout">
+    <div class="container checkout-container">
+      <!-- Formulario de pago -->
+      <div class="checkout-form">
+        <h2 class="checkout-titulo">Información de Pago</h2>
+        
+        <!-- Información de envío -->
+        <div class="form-section">
+          <h3>Información de Envío</h3>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="nombre">Nombre</label>
+              <input type="text" id="nombre" required>
+            </div>
+            <div class="form-group">
+              <label for="apellido">Apellido</label>
+              <input type="text" id="apellido" required>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="direccion">Dirección</label>
+            <input type="text" id="direccion" required>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="ciudad">Ciudad</label>
+              <input type="text" id="ciudad" required>
+            </div>
+            <div class="form-group">
+              <label for="departamento">Departamento</label>
+              <input type="text" id="departamento" required>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="codigo-postal">Código Postal</label>
+              <input type="text" id="codigo-postal" required>
+            </div>
+            <div class="form-group">
+              <label for="telefono">Teléfono</label>
+              <input type="tel" id="telefono" required>
+            </div>
+          </div>
+        </div>
+
+        <!-- Método de pago -->
+        <div class="form-section">
+          <h3>Método de Pago</h3>
+          <div class="metodo-pago-opciones">
+            <div class="metodo-pago-opcion" data-metodo="tarjeta">
+              <div class="metodo-pago-icono">💳</div>
+              <div>Tarjeta de Crédito</div>
+            </div>
+            <div class="metodo-pago-opcion" data-metodo="transferencia">
+              <div class="metodo-pago-icono">🏦</div>
+              <div>Transferencia</div>
+            </div>
+          </div>
+
+          <!-- Detalles de tarjeta -->
+          <div class="detalles-tarjeta" id="detalles-tarjeta">
+            <div class="form-group">
+              <label for="numero-tarjeta">Número de Tarjeta</label>
+              <input type="text" id="numero-tarjeta" placeholder="1234 5678 9012 3456">
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="fecha-expiracion">Fecha de Expiración</label>
+                <input type="text" id="fecha-expiracion" placeholder="MM/AA">
+              </div>
+              <div class="form-group">
+                <label for="cvv">CVV</label>
+                <input type="text" id="cvv" placeholder="123">
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="nombre-tarjeta">Nombre en la Tarjeta</label>
+              <input type="text" id="nombre-tarjeta">
+            </div>
+          </div>
+
+          <!-- Detalles de transferencia -->
+          <div class="detalles-tarjeta" id="detalles-transferencia">
+            <p>Para completar tu compra, realiza una transferencia a:</p>
+            <p><strong>Banco: Nequi</strong></p>
+            <p><strong>Cuenta: 3107875531</strong></p>
+            <p><strong>Titular: Julian Cortes</strong></p>
+            <p>Una vez realizada la transferencia, envíanos el comprobante a info@victorem.co</p>
+          </div>
+        </div>
+
+        <!-- Botón de pago -->
+        <button class="btn-pagar" id="btn-pagar">Realizar Pago</button>
+
+        <!-- Mensaje de éxito -->
+        <div class="mensaje-exito" id="mensaje-exito">
+          <div class="icono-exito">✓</div>
+          <h2>¡Pago Completado!</h2>
+          <p>Tu pedido ha sido procesado exitosamente.</p>
+          <p>Recibirás un correo de confirmación en breve.</p>
+          <p><strong>Número de pedido: #VM-<span id="numero-pedido"></span></strong></p>
+          <a href="index.html" class="btn" style="margin-top: 20px;">Volver al Inicio</a>
+        </div>
+      </div>
+
+      <!-- Resumen del pedido -->
+      <div class="checkout-resumen">
+        <h2 class="checkout-titulo">Resumen del Pedido</h2>
+        <div id="resumen-pedido">
+          <!-- El contenido se cargará dinámicamente -->
+        </div>
+        <div class="resumen-linea">
+          <span>Envío:</span>
+          <span>$10.000</span>
+        </div>
+        <div class="resumen-total">
+          <span>Total:</span>
+          <span id="total-pedido">$0</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-section">
+          <h3>VICTOREM</h3>
+          <p>Arte en cada balín, elegancia en cada detalle. Creamos joyas únicas que trascienden el tiempo.</p>
+        </div>
+
+        <div class="footer-section">
+          <h3>Contacto</h3>
+          <ul>
+            <li>Calle 20 #9-88, Campoalegre, Huila</li>
+            <li>+57 300 123 4567</li>
+            <li>info@victorem.co</li>
+            <li>Lun - Sáb: 9:00 AM - 6:00 PM</li>
+          </ul>
+        </div>
+
+        <div class="footer-section">
+          <h3>Enlaces</h3>
+          <ul>
+            <li><button id="cart-icon-footer" style="background: none; border: none; cursor: pointer; color: inherit; text-decoration: underline;">Carrito de Compras</button></li>
+            <li><a href="politicas.html">Políticas y Privacidad</a></li>
+            <li><a href="cuidado.html">Cuidado de joyas</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-section">
+          <h3>Formas de pago</h3>
+          <div class="metodos-pago">
+            <span class="metodo-pago">VISA</span>
+            <span class="metodo-pago">MC</span>
+            <span class="metodo-pago">AMEX</span>
+            <span class="metodo-pago">PSE</span>
+            <span class="metodo-pago">EFECTY</span>
+            <span class="metodo-pago">NEQUI</span>
+          </div>
+          <p style="margin-top: 15px;">Envíos seguros a toda Colombia</p>
+        </div>
+
+
+      </div>
+
+      <div class="footer-bottom">
+        <p>© 2024 Victorem. Todos los derechos reservados.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Modal para inicio de sesión -->
+  <div id="loginModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center;">
+    <div class="auth-form">
+      <h2>Iniciar Sesión</h2>
+      <div id="loginError" class="error-message"></div>
+      <div id="loginSuccess" class="success-message"></div>
+      <form id="loginForm">
+        <div class="form-group">
+          <label for="loginEmail">Correo Electrónico</label>
+          <input type="email" id="loginEmail" name="email" required>
+        </div>
+        <div class="form-group">
+          <label for="loginPassword">Contraseña</label>
+          <input type="password" id="loginPassword" name="password" required>
+        </div>
+        <button type="submit" class="auth-btn">Iniciar Sesión</button>
+      </form>
+      <div class="auth-switch">
+        ¿No tienes una cuenta? <a href="#" id="showRegister">Regístrate aquí</a>
+      </div>
+      <button type="button" id="closeLogin" style="position: absolute; top: 15px; right: 15px; background: none; border: none; font-size: 20px; cursor: pointer;">×</button>
+    </div>
+  </div>
+
+  <!-- Modal para registro -->
+  <div id="registerModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center;">
+    <div class="auth-form">
+      <h2>Crear Cuenta</h2>
+      <div id="registerError" class="error-message"></div>
+      <div id="registerSuccess" class="success-message"></div>
+      <form id="registerForm">
+        <div class="form-group">
+          <label for="registerName">Nombre Completo</label>
+          <input type="text" id="registerName" name="name" required>
+        </div>
+        <div class="form-group">
+          <label for="registerEmail">Correo Electrónico</label>
+          <input type="email" id="registerEmail" name="email" required>
+        </div>
+        <div class="form-group">
+          <label for="registerPassword">Contraseña</label>
+          <input type="password" id="registerPassword" name="password" required minlength="6">
+        </div>
+        <div class="form-group">
+          <label for="registerConfirmPassword">Confirmar Contraseña</label>
+          <input type="password" id="registerConfirmPassword" name="confirmPassword" required>
+        </div>
+        <button type="submit" class="auth-btn">Registrarse</button>
+      </form>
+      <div class="auth-switch">
+        ¿Ya tienes una cuenta? <a href="#" id="showLogin">Inicia sesión aquí</a>
+      </div>
+      <button type="button" id="closeRegister" style="position: absolute; top: 15px; right: 15px; background: none; border: none; font-size: 20px; cursor: pointer;">×</button>
+    </div>
+  </div>
+
+  <script src="main.js"></script>
+  <script src="checkout.js"></script>
+</body>
+
+</html>
