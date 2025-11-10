@@ -24,6 +24,8 @@ app.set('trust proxy', 1);
 // B. Configuración de CORS con la URL de Vercel y credenciales (Cookies)
 const allowedOrigins = [
     process.env.FRONTEND_URL, 
+    // Añadimos explícitamente el dominio de Vercel para asegurar la conexión
+    'https://victor-beta.vercel.app', 
     'http://localhost:3000',
     'http://localhost:5173', // Añade los puertos de desarrollo comunes
 ];
@@ -36,6 +38,8 @@ const corsOptions = {
         if (allowedOrigins.includes(origin)) {
             callback(null, true);
         } else {
+            // Loguear el origen no permitido para depuración
+            console.error(`CORS BLOCKED: Origin ${origin} not in allowed list.`);
             callback(new Error('Not allowed by CORS'));
         }
     },
@@ -92,6 +96,8 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
         // Fallback
         app.get('*', (req, res, next) => {
+            // Si la ruta comienza con /api/ y no fue manejada por las rutas anteriores (auth, orders),
+            // significa que la ruta API no existe.
             if (req.path.startsWith('/api/')) return next();
             res.sendFile(path.join(staticPath, 'index.html'));
         });
