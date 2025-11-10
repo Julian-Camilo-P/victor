@@ -414,6 +414,10 @@
       border-top: 1px solid #444;
     }
 
+    .footer-bottom p {
+      text-align: center;
+    }
+
     /* Estilos para el sistema de autenticación */
     .auth-container {
       display: flex;

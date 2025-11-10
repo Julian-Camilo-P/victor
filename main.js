@@ -66,84 +66,76 @@
       }
 
       // Iniciar sesión
-      async function login(email, password) {
-        // Primero intentar login contra el backend (si está disponible)
-        try {
-          const res = await fetch('/api/auth/login', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            credentials: 'include',
-            body: JSON.stringify({ email, password })
-          });
-          if (res.ok) {
-            const data = await res.json();
-            localStorage.setItem('currentUser', JSON.stringify(data.user));
-            loginSuccess.textContent = '¡Inicio de sesión exitoso!';
-            loginSuccess.style.display = 'block';
-            setTimeout(() => { closeModals(); checkAuthStatus(); }, 1000);
-            return true;
-          }
-        } catch (e) {
-          console.warn('Backend login failed, falling back to localStorage method', e);
-        }
-
-        // Fallback a localStorage (modo offline o sin backend)
+      function login(email, password) {
+        // Obtener usuarios del localStorage
         const users = JSON.parse(localStorage.getItem('users')) || [];
+        
+        // Buscar usuario
         const user = users.find(u => u.email === email && u.password === password);
+        
         if (user) {
+          // Guardar usuario actual en localStorage
           localStorage.setItem('currentUser', JSON.stringify(user));
+          
+          // Mostrar mensaje de éxito
           loginSuccess.textContent = '¡Inicio de sesión exitoso!';
           loginSuccess.style.display = 'block';
-          setTimeout(() => { closeModals(); checkAuthStatus(); }, 1000);
+          
+          // Actualizar interfaz después de un breve retraso
+          setTimeout(() => {
+            closeModals();
+            checkAuthStatus();
+          }, 1500);
+          
           return true;
+        } else {
+          // Mostrar mensaje de error
+          loginError.textContent = 'Correo electrónico o contraseña incorrectos';
+          loginError.style.display = 'block';
+          return false;
         }
-        loginError.textContent = 'Correo electrónico o contraseña incorrectos';
-        loginError.style.display = 'block';
-        return false;
       }
 
       // Registrar nuevo usuario
-      async function register(name, email, password) {
-        // Intentar registrar en backend primero
-        try {
-          const res = await fetch('/api/auth/register', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            credentials: 'include',
-            body: JSON.stringify({ name, email, password })
-          });
-          if (res.ok) {
-            const data = await res.json();
-            localStorage.setItem('currentUser', JSON.stringify(data.user));
-            registerSuccess.textContent = '¡Cuenta creada exitosamente!';
-            registerSuccess.style.display = 'block';
-            setTimeout(() => { closeModals(); checkAuthStatus(); }, 1000);
-            return true;
-          } else {
-            const err = await res.json().catch(() => ({}));
-            registerError.textContent = err.error || 'Error al registrar';
-            registerError.style.display = 'block';
-            return false;
-          }
-        } catch (e) {
-          console.warn('Backend register failed, falling back to localStorage method', e);
-        }
-
-        // Fallback localStorage
+      function register(name, email, password) {
+        // Obtener usuarios del localStorage
         const users = JSON.parse(localStorage.getItem('users')) || [];
+        
+        // Verificar si el usuario ya existe
         const existingUser = users.find(u => u.email === email);
+        
         if (existingUser) {
           registerError.textContent = 'Ya existe un usuario con este correo electrónico';
           registerError.style.display = 'block';
           return false;
         }
-        const newUser = { id: Date.now().toString(), name, email, password, registrationDate: new Date().toISOString() };
+        
+        // Crear nuevo usuario
+        const newUser = {
+          id: Date.now().toString(),
+          name,
+          email,
+          password,
+          registrationDate: new Date().toISOString()
+        };
+        
+        // Guardar usuario
         users.push(newUser);
         localStorage.setItem('users', JSON.stringify(users));
+        
+        // Iniciar sesión automáticamente
         localStorage.setItem('currentUser', JSON.stringify(newUser));
+        
+        // Mostrar mensaje de éxito
         registerSuccess.textContent = '¡Cuenta creada exitosamente!';
         registerSuccess.style.display = 'block';
-        setTimeout(() => { closeModals(); checkAuthStatus(); }, 1000);
+        
+        // Actualizar interfaz después de un breve retraso
+        setTimeout(() => {
+          closeModals();
+          checkAuthStatus();
+        }, 1500);
+        
         return true;
       }
 

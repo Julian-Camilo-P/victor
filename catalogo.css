@@ -424,6 +424,10 @@ footer {
     border-top: 1px solid #444;
 }
 
+.footer-bottom p {
+    text-align: center;
+}
+
 /* Estilos para el sistema de autenticación */
 .auth-container {
     display: flex;
@@ -568,67 +572,429 @@ footer {
 }
 
 /* Responsive */
+@media (max-width: 1200px) {
+  .container {
+    padding: 0 15px;
+  }
+
+  .hero h1 {
+    font-size: 32px;
+  }
+
+  .hero p {
+    font-size: 16px;
+  }
+
+  .productos {
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 25px;
+  }
+
+  .modal-content {
+    max-width: 900px;
+  }
+}
+
+@media (max-width: 1024px) {
+  .header-container {
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  nav ul {
+    margin-top: 10px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  nav ul li {
+    margin-left: 15px;
+    margin-bottom: 5px;
+  }
+
+  .hero h1 {
+    font-size: 30px;
+  }
+
+  .hero p {
+    font-size: 15px;
+  }
+
+  .filtros-container {
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .filtro-grupo {
+    flex: 1 1 180px;
+  }
+
+  .productos {
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 20px;
+  }
+
+  .modal-content {
+    width: 95%;
+    max-width: 700px;
+  }
+}
+
 @media (max-width: 768px) {
-    .header-container {
-        flex-direction: column;
-    }
+  .header-container {
+    flex-direction: column;
+    gap: 20px;
+  }
 
-    nav ul {
-        margin-top: 15px;
-    }
+  nav ul {
+    margin-top: 15px;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
 
-    .hero h1 {
-        font-size: 28px;
-    }
+  nav ul li {
+    margin-left: 0;
+    margin-bottom: 10px;
+  }
 
-    .hero p {
-        font-size: 16px;
-    }
+  .logo-text {
+    font-size: 20px;
+  }
 
-    .filtros-container {
-        flex-direction: column;
-        align-items: flex-start;
-    }
+  .hero {
+    padding: 50px 20px;
+  }
 
-    .filtro-grupo {
-        width: 100%;
-        margin-bottom: 10px;
-    }
+  .hero h1 {
+    font-size: 28px;
+  }
 
-    .catalogo-header {
-        flex-direction: column;
-        align-items: flex-start;
-    }
+  .hero p {
+    font-size: 16px;
+  }
 
-    .ordenar {
-        margin-top: 15px;
-    }
+  .filtros {
+    padding: 15px;
+  }
 
-    .modal-body {
-        flex-direction: column;
-    }
+  .filtros-container {
+    flex-direction: column;
+    align-items: stretch;
+  }
 
-    .modal-imagen,
-    .modal-info {
-        min-width: 100%;
-    }
+  .filtro-grupo {
+    width: 100%;
+    margin-bottom: 10px;
+  }
 
-    .auth-form {
-        padding: 20px;
-    }
+  .catalogo-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+  }
+
+  .ordenar {
+    margin-top: 0;
+    width: 100%;
+  }
+
+  .productos {
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 15px;
+  }
+
+  .card-content {
+    padding: 15px;
+  }
+
+  .card h3 {
+    font-size: 18px;
+  }
+
+  .modal-content {
+    width: 90%;
+    margin: 20px auto;
+  }
+
+  .modal-body {
+    flex-direction: column;
+  }
+
+  .modal-imagen,
+  .modal-info {
+    min-width: 100%;
+  }
+
+  .modal-info {
+    padding: 20px;
+  }
+
+  .modal-info h2 {
+    font-size: 24px;
+  }
+
+  .modal-precio {
+    font-size: 20px;
+  }
+
+  .modal-acciones {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .btn-large {
+    width: 100%;
+  }
+
+  .auth-form {
+    padding: 30px 20px;
+    margin: 20px;
+  }
+
+  .auth-form h2 {
+    font-size: 24px;
+  }
 }
 
 @media (max-width: 480px) {
-    .productos {
-        grid-template-columns: 1fr;
-    }
+  .container {
+    padding: 0 10px;
+  }
 
-    .modal-acciones {
-        flex-direction: column;
-    }
+  .header-container {
+    padding: 10px 0;
+  }
 
-    .logo-container {
-        flex-direction: column;
-        gap: 5px;
-    }
+  .logo {
+    height: 35px;
+  }
+
+  .logo-text {
+    font-size: 18px;
+  }
+
+  nav ul {
+    gap: 8px;
+  }
+
+  nav ul li {
+    margin-bottom: 8px;
+  }
+
+  .hero {
+    padding: 40px 15px;
+  }
+
+  .hero h1 {
+    font-size: 24px;
+    letter-spacing: 1px;
+  }
+
+  .hero p {
+    font-size: 14px;
+  }
+
+  .filtros {
+    padding: 10px;
+    margin: 20px 0;
+  }
+
+  .filtros-container {
+    gap: 10px;
+  }
+
+  .filtro-grupo label {
+    font-size: 14px;
+  }
+
+  select,
+  input[type="text"] {
+    padding: 6px 8px;
+    font-size: 14px;
+  }
+
+  .btn {
+    padding: 8px 16px;
+    font-size: 13px;
+  }
+
+  .catalogo {
+    padding: 30px 0;
+  }
+
+  .catalogo-titulo {
+    font-size: 24px;
+  }
+
+  .productos {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .card {
+    margin: 0 auto;
+    max-width: 100%;
+  }
+
+  .card-content {
+    padding: 12px;
+  }
+
+  .card h3 {
+    font-size: 16px;
+    margin-bottom: 8px;
+  }
+
+  .card p {
+    font-size: 13px;
+    margin-bottom: 10px;
+  }
+
+  .price {
+    font-size: 16px;
+    margin-bottom: 10px;
+  }
+
+  .card-acciones {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .modal-content {
+    width: 95%;
+    margin: 10px auto;
+    border-radius: 4px;
+  }
+
+  .modal-header {
+    padding: 15px;
+  }
+
+  .modal-body {
+    padding: 0;
+  }
+
+  .modal-imagen img {
+    width: 100%;
+    height: auto;
+  }
+
+  .modal-info {
+    padding: 15px;
+  }
+
+  .modal-info h2 {
+    font-size: 20px;
+    margin-bottom: 10px;
+  }
+
+  .modal-precio {
+    font-size: 18px;
+    margin-bottom: 15px;
+  }
+
+  .modal-descripcion {
+    font-size: 14px;
+    margin-bottom: 15px;
+  }
+
+  .modal-caracteristicas li {
+    font-size: 14px;
+    margin-bottom: 6px;
+  }
+
+  .modal-acciones {
+    margin-top: 20px;
+  }
+
+  .footer-content {
+    margin-bottom: 20px;
+  }
+
+  .footer-section h3 {
+    font-size: 18px;
+    margin-bottom: 15px;
+  }
+
+  .footer-section ul li {
+    margin-bottom: 8px;
+  }
+
+  .metodos-pago {
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .metodo-pago {
+    padding: 4px 8px;
+    font-size: 12px;
+  }
+
+  .auth-form {
+    padding: 25px 15px;
+    margin: 15px;
+    max-width: 100%;
+  }
+
+  .auth-form h2 {
+    font-size: 22px;
+    margin-bottom: 25px;
+  }
+
+  .form-group input {
+    padding: 10px;
+    font-size: 15px;
+  }
+
+  .auth-btn {
+    padding: 10px;
+    font-size: 15px;
+  }
+
+  .user-menu-btn {
+    font-size: 14px;
+    padding: 8px;
+  }
+
+  .user-dropdown {
+    min-width: 140px;
+  }
+
+  .user-dropdown a {
+    padding: 10px 12px;
+    font-size: 14px;
+  }
+
+  .logo-container {
+    flex-direction: column;
+    gap: 5px;
+  }
+}
+
+@media (max-width: 360px) {
+  .hero h1 {
+    font-size: 20px;
+  }
+
+  .hero p {
+    font-size: 12px;
+  }
+
+  .btn {
+    padding: 6px 12px;
+    font-size: 12px;
+  }
+
+  .modal-info h2 {
+    font-size: 18px;
+  }
+
+  .modal-precio {
+    font-size: 16px;
+  }
+
+  .auth-form h2 {
+    font-size: 20px;
+  }
 }

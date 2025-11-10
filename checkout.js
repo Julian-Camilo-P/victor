@@ -144,77 +144,25 @@ document.addEventListener('DOMContentLoaded', function() {
       return;
     }
     
-    // Procesamiento: intentar crear pedido en backend si hay sesión
+    // Simular procesamiento de pago
     btnPagar.disabled = true;
     btnPagar.textContent = 'Procesando...';
-
-    const payload = (function() {
-      if (!pedido) return null;
-      if (pedido.tipo === 'carrito') {
-        return { items: pedido.productos.map(p => ({ product_id: p.id, name: p.nombre, image: p.imagen, price: p.precio, quantity: p.cantidad })), total: pedido.total };
-      }
-      if (pedido.tipo === 'catalogo') {
-        const prod = pedido.producto;
-        return { items: [{ product_id: prod.id || null, name: prod.nombre, image: prod.imagen, price: pedido.total, quantity: pedido.cantidad || 1 }], total: pedido.total };
-      }
-      if (pedido.tipo === 'personalizado') {
-        return { items: [{ product_id: 'personalizado', name: pedido.nombre || 'Personalizado', image: pedido.imagen || null, price: pedido.total, quantity: 1 }], total: pedido.total };
-      }
-      return null;
-    })();
-
-    if (payload) {
-      // Intentar POST a /api/orders con credenciales (session cookie)
-      fetch('/api/orders', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify({ items: payload.items, total: payload.total })
-      }).then(async res => {
-        if (res.ok) {
-          const data = await res.json();
-          // Mostrar éxito y limpiar pedidoActual
-          numeroPedido.textContent = data.orderId || '';
-          mensajeExito.classList.add('activo');
-          localStorage.removeItem('pedidoActual');
-          // redirect to profile orders after a short delay
-          setTimeout(() => { window.location.href = 'miperfil.html#pedidos'; }, 1000);
-        } else {
-          // Fallback: si no está autenticado o error, usar el flujo localStorage (simulado)
-          console.warn('Backend order creation failed, falling back to localStorage. Status:', res.status);
-          fallbackLocalOrder();
-        }
-      }).catch(err => {
-        console.error('Error creating order on server:', err);
-        fallbackLocalOrder();
-      }).finally(() => {
-        btnPagar.disabled = false;
-        btnPagar.textContent = 'Pagar';
-      });
-    } else {
-      // No payload (invalid), fallback
-      fallbackLocalOrder();
-      btnPagar.disabled = false;
-      btnPagar.textContent = 'Pagar';
-    }
     
-    function fallbackLocalOrder() {
-      // Simular demora de procesamiento
-      setTimeout(function() {
-        // Generar número de pedido aleatorio
-        const numPedido = Math.floor(100000 + Math.random() * 900000);
-        numeroPedido.textContent = numPedido;
-        
-        // Mostrar mensaje de éxito
-        mensajeExito.classList.add('activo');
-        
-        // Guardar pedido en historial local
-        guardarEnHistorial(numPedido);
-        
-        // Limpiar pedido actual
-        localStorage.removeItem('pedidoActual');
-      }, 1000);
-    }
+    // Simular demora de procesamiento
+    setTimeout(function() {
+      // Generar número de pedido aleatorio
+      const numPedido = Math.floor(100000 + Math.random() * 900000);
+      numeroPedido.textContent = numPedido;
+      
+      // Mostrar mensaje de éxito
+      mensajeExito.classList.add('activo');
+      
+      // Guardar pedido en historial
+      guardarEnHistorial(numPedido);
+      
+      // Limpiar pedido actual
+      localStorage.removeItem('pedidoActual');
+    }, 2000);
   }
 
   // Validar formulario

@@ -61,31 +61,8 @@
         // Obtener iniciales para el avatar
         const iniciales = user.name.split(' ').map(n => n[0]).join('').toUpperCase();
         
-        // Obtener pedidos del usuario desde backend si hay sesión, si no usar localStorage
-        let pedidos = JSON.parse(localStorage.getItem(`pedidos_${user.id}`)) || [];
-
-        // Intentar obtener pedidos desde el servidor (si hay sesión cookie)
-        fetch('/api/orders', { credentials: 'include' }).then(async res => {
-          if (res.ok) {
-            const data = await res.json();
-            // map server orders to frontend shape
-            pedidos = data.orders.map(o => ({ id: o.id, fecha: o.created_at, estado: o.status, productos: o.items.map(it => ({ imagen: it.image || 'imagenes/logo.png', nombre: it.name, precio: it.price, cantidad: it.quantity })), total: o.total }));
-            // Re-render perfil with server orders
-            perfilContenido.innerHTML = `
-          <div class="perfil-container">...RENDER_PLACEHOLDER...`;
-            // Instead of fully duplicating HTML here, call the same render flow by recreating the page content below
-            // We'll call renderPerfilWithOrders to inject the orders
-            renderPerfilWithOrders(user, pedidos);
-          } else {
-            // no auth or error: continue with localStorage rendering
-            renderPerfilWithOrders(user, pedidos);
-          }
-        }).catch(err => {
-          console.warn('Could not fetch orders from server, using localStorage', err);
-          renderPerfilWithOrders(user, pedidos);
-        });
-        // return here: actual rendering happens in renderPerfilWithOrders
-        return;
+        // Obtener pedidos del usuario
+        const pedidos = JSON.parse(localStorage.getItem(`pedidos_${user.id}`)) || [];
         
         // Obtener carrito del usuario
         const carrito = JSON.parse(localStorage.getItem('carrito')) || [];
@@ -274,65 +251,6 @@
         // Inicializar eventos
         inicializarEventosPerfil(user);
       }
-
-      // Helper to render perfil using existing HTML template but with provided pedidos
-      function renderPerfilWithOrders(user, pedidos) {
-        // reuse the original cargarPerfilUsuario rendering by constructing the HTML similarly
-        // For simplicity, call the original flow but replace the pedidos variable before rendering
-        // We'll set a temporary storage so the original function uses these pedidos
-        // Save original localStorage pedidos and overwrite for render
-        const key = `pedidos_${user.id}`;
-        const original = localStorage.getItem(key);
-        try {
-          localStorage.setItem(key, JSON.stringify(pedidos));
-          // call the original render block by regenerating the HTML from the function
-          // We'll replicate the core part: set perfilContenido.innerHTML using cargarPerfilUsuario's template
-          // For maintainability, we will construct the full HTML here similar to the prior implementation.
-          // (Simplified rendering to avoid duplicating too much code.)
-          const iniciales = user.name.split(' ').map(n => n[0]).join('').toUpperCase();
-          perfilContenido.innerHTML = `
-          <div class="perfil-container">
-            <div class="perfil-sidebar">
-              <div class="perfil-avatar">
-                <div class="avatar">${iniciales}</div>
-                <h3>${user.name}</h3>
-                <p>${user.email}</p>
-                <p>Miembro desde: ${new Date(user.registrationDate).toLocaleDateString('es-ES')}</p>
-              </div>
-              
-              <ul class="perfil-nav">
-                <li><a href="#informacion" class="nav-link ${seccionActiva === 'informacion' ? 'active' : ''}">Información Personal</a></li>
-                <li><a href="#direcciones" class="nav-link ${seccionActiva === 'direcciones' ? 'active' : ''}">Direcciones</a></li>
-                <li><a href="#pedidos" class="nav-link ${seccionActiva === 'pedidos' ? 'active' : ''}">Mis Pedidos</a></li>
-                <li><a href="#carrito" class="nav-link ${seccionActiva === 'carrito' ? 'active' : ''}">Carrito de Compras</a></li>
-                <li><a href="#seguridad" class="nav-link ${seccionActiva === 'seguridad' ? 'active' : ''}">Seguridad</a></li>
-              </ul>
-            </div>
-            <div class="perfil-content">
-              <div id="informacion" class="perfil-seccion ${seccionActiva === 'informacion' ? 'active' : ''}">
-                <h2 class="perfil-titulo">Información Personal</h2>
-                <p>...</p>
-              </div>
-              <div id="direcciones" class="perfil-seccion ${seccionActiva === 'direcciones' ? 'active' : ''}">
-                <h2 class="perfil-titulo">Mis Direcciones</h2>
-                <div id="lista-direcciones">${generarDireccionesHTML(user.addresses || [])}</div>
-                <button id="agregar-direccion" class="btn" style="margin-top: 20px;">Agregar Nueva Dirección</button>
-              </div>
-              <div id="pedidos" class="perfil-seccion ${seccionActiva === 'pedidos' ? 'active' : ''}">
-                <h2 class="perfil-titulo">Mis Pedidos</h2>
-                <div id="lista-pedidos">${generarPedidosHTML(pedidos)}</div>
-              </div>
-              <div id="carrito" class="perfil-seccion ${seccionActiva === 'carrito' ? 'active' : ''}">
-                <h2 class="perfil-titulo">Carrito de Compras</h2>
-                <div class="carrito-grid" id="lista-carrito">${generarCarritoHTML(JSON.parse(localStorage.getItem('carrito') || '[]'))}</div>
-              </div>
-            </div>
-          </div>`;
-          inicializarEventosPerfil(user);
-        } finally {
-          if (original === null) localStorage.removeItem(key); else localStorage.setItem(key, original);
-        }
-      }
       
       // Generar HTML para direcciones
       function generarDireccionesHTML(direcciones) {
@@ -394,31 +312,9 @@
             <div class="pedido-total">
               Total: ${pedido.total}
             </div>
-            ${pedido.estado && pedido.estado.toString().toLowerCase() !== 'cancelled' && pedido.estado.toString().toLowerCase() !== 'cancelado' ? `<div style="margin-top:10px;"><button class="btn btn-outline" onclick="cancelarPedido(${pedido.id})">Cancelar pedido</button></div>` : ''}
           </div>
         `).join('');
       }
-
-      // Cancel order (calls backend); if not authenticated on server, alerts user
-      window.cancelarPedido = function(orderId) {
-        if (!confirm('¿Estás seguro de que deseas cancelar este pedido?')) return;
-        fetch(`/api/orders/${orderId}/cancel`, { method: 'POST', credentials: 'include' }).then(async res => {
-          if (res.ok) {
-            alert('Pedido cancelado correctamente');
-            // reload orders view
-            const user = JSON.parse(localStorage.getItem('currentUser'));
-            if (user) cargarPerfilUsuario(user);
-          } else if (res.status === 401) {
-            alert('Debes iniciar sesión para cancelar pedidos (no autenticado en el servidor).');
-          } else {
-            const data = await res.json().catch(()=>({}));
-            alert('No se pudo cancelar el pedido: ' + (data.error || res.status));
-          }
-        }).catch(err => {
-          console.error('Error cancelling order:', err);
-          alert('Error al cancelar el pedido. Revisa la consola.');
-        });
-      };
       
       // Generar HTML para carrito
       function generarCarritoHTML(carrito) {

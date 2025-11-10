@@ -459,6 +459,10 @@ footer {
   border-top: 1px solid #444;
 }
 
+.footer-bottom p {
+  text-align: center;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
   .header-container {
