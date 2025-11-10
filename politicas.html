@@ -207,7 +207,6 @@
         <div class="footer-section">
           <h3>Enlaces</h3>
           <ul>
-            <li><button id="cart-icon-footer" style="background: none; border: none; cursor: pointer; color: inherit; text-decoration: underline;">Carrito de Compras</button></li>
             <li><a href="politicas.html">Políticas y Privacidad</a></li>
             <li><a href="cuidado.html">Cuidado de joyas</a></li>
           </ul>
@@ -232,6 +231,62 @@
       </div>
     </div>
   </footer>
+
+  <!-- Modal para inicio de sesión -->
+  <div id="loginModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center;">
+    <div class="auth-form">
+      <h2>Iniciar Sesión</h2>
+      <div id="loginError" class="error-message"></div>
+      <div id="loginSuccess" class="success-message"></div>
+      <form id="loginForm">
+        <div class="form-group">
+          <label for="loginEmail">Correo Electrónico</label>
+          <input type="email" id="loginEmail" name="email" required>
+        </div>
+        <div class="form-group">
+          <label for="loginPassword">Contraseña</label>
+          <input type="password" id="loginPassword" name="password" required>
+        </div>
+        <button type="submit" class="auth-btn">Iniciar Sesión</button>
+      </form>
+      <div class="auth-switch">
+        ¿No tienes una cuenta? <a href="#" id="showRegister">Regístrate aquí</a>
+      </div>
+      <button type="button" id="closeLogin" style="position: absolute; top: 15px; right: 15px; background: none; border: none; font-size: 20px; cursor: pointer;">×</button>
+    </div>
+  </div>
+
+  <!-- Modal para registro -->
+  <div id="registerModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center;">
+    <div class="auth-form">
+      <h2>Crear Cuenta</h2>
+      <div id="registerError" class="error-message"></div>
+      <div id="registerSuccess" class="success-message"></div>
+      <form id="registerForm">
+        <div class="form-group">
+          <label for="registerName">Nombre Completo</label>
+          <input type="text" id="registerName" name="name" required>
+        </div>
+        <div class="form-group">
+          <label for="registerEmail">Correo Electrónico</label>
+          <input type="email" id="registerEmail" name="email" required>
+        </div>
+        <div class="form-group">
+          <label for="registerPassword">Contraseña</label>
+          <input type="password" id="registerPassword" name="password" required minlength="6">
+        </div>
+        <div class="form-group">
+          <label for="registerConfirmPassword">Confirmar Contraseña</label>
+          <input type="password" id="registerConfirmPassword" name="confirmPassword" required>
+        </div>
+        <button type="submit" class="auth-btn">Registrarse</button>
+      </form>
+      <div class="auth-switch">
+        ¿Ya tienes una cuenta? <a href="#" id="showLogin">Inicia sesión aquí</a>
+      </div>
+      <button type="button" id="closeRegister" style="position: absolute; top: 15px; right: 15px; background: none; border: none; font-size: 20px; cursor: pointer;">×</button>
+    </div>
+  </div>
 
   <script src="main.js"></script>
 </body>
