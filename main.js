@@ -17,26 +17,40 @@
       const registerSuccess = document.getElementById('registerSuccess');
 
       // Verificar si el usuario ya está autenticado
-      function checkAuthStatus() {
-        const user = JSON.parse(localStorage.getItem('currentUser'));
-        if (user) {
-          // Usuario autenticado - CORREGIDO: Agregar enlace a miperfil.html
-          authNav.innerHTML = `
-            <div class="user-menu">
-              <button class="user-menu-btn">
-                <span>${user.name}</span>
-                <span>▼</span>
-              </button>
-              <div class="user-dropdown">
-                <a href="miperfil.html" id="profileLink">Mi Perfil</a>
-                <a href="#" id="logoutLink">Cerrar Sesión</a>
+      async function checkAuthStatus() {
+        try {
+          const response = await fetch('/api/auth/me', {
+            credentials: 'include'
+          });
+          const data = await response.json();
+          const user = data.user;
+
+          if (user) {
+            // Usuario autenticado - CORREGIDO: Agregar enlace a miperfil.html
+            authNav.innerHTML = `
+              <div class="user-menu">
+                <button class="user-menu-btn">
+                  <span>${user.name}</span>
+                  <span>▼</span>
+                </button>
+                <div class="user-dropdown">
+                  <a href="miperfil.html" id="profileLink">Mi Perfil</a>
+                  <a href="#" id="logoutLink">Cerrar Sesión</a>
+                </div>
               </div>
-            </div>
-          `;
-          
-          // Agregar eventos para los enlaces del menú de usuario
-          document.getElementById('logoutLink').addEventListener('click', logout);
-        } else {
+            `;
+
+            // Agregar eventos para los enlaces del menú de usuario
+            document.getElementById('logoutLink').addEventListener('click', logout);
+          } else {
+            // Usuario no autenticado
+            authNav.innerHTML = `
+              <li><a href="#" id="loginLink">Iniciar Sesión</a></li>
+            `;
+            document.getElementById('loginLink').addEventListener('click', showLoginModal);
+          }
+        } catch (error) {
+          console.error('Error checking auth status:', error);
           // Usuario no autenticado
           authNav.innerHTML = `
             <li><a href="#" id="loginLink">Iniciar Sesión</a></li>
@@ -66,82 +80,103 @@
       }
 
       // Iniciar sesión
-      function login(email, password) {
-        // Obtener usuarios del localStorage
-        const users = JSON.parse(localStorage.getItem('users')) || [];
-        
-        // Buscar usuario
-        const user = users.find(u => u.email === email && u.password === password);
-        
-        if (user) {
-          // Guardar usuario actual en localStorage
-          localStorage.setItem('currentUser', JSON.stringify(user));
-          
-          // Mostrar mensaje de éxito
-          loginSuccess.textContent = '¡Inicio de sesión exitoso!';
-          loginSuccess.style.display = 'block';
-          
-          // Actualizar interfaz después de un breve retraso
-          setTimeout(() => {
-            closeModals();
-            checkAuthStatus();
-          }, 1500);
-          
-          return true;
-        } else {
-          // Mostrar mensaje de error
-          loginError.textContent = 'Correo electrónico o contraseña incorrectos';
+      async function login(email, password) {
+        try {
+          const response = await fetch('/api/auth/login', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            credentials: 'include',
+            body: JSON.stringify({ email, password })
+          });
+
+          const data = await response.json();
+
+          if (response.ok) {
+            // Mostrar mensaje de éxito
+            loginSuccess.textContent = '¡Inicio de sesión exitoso!';
+            loginSuccess.style.display = 'block';
+
+            // Actualizar interfaz después de un breve retraso
+            setTimeout(() => {
+              closeModals();
+              checkAuthStatus();
+            }, 1500);
+
+            return true;
+          } else {
+            // Mostrar mensaje de error
+            if (data.error === 'invalid_credentials') {
+              loginError.textContent = 'Correo electrónico o contraseña incorrectos';
+            } else {
+              loginError.textContent = data.error || 'Error al iniciar sesión';
+            }
+            loginError.style.display = 'block';
+            return false;
+          }
+        } catch (error) {
+          console.error('Error during login:', error);
+          loginError.textContent = 'Error de conexión. Inténtalo de nuevo.';
           loginError.style.display = 'block';
           return false;
         }
       }
 
       // Registrar nuevo usuario
-      function register(name, email, password) {
-        // Obtener usuarios del localStorage
-        const users = JSON.parse(localStorage.getItem('users')) || [];
-        
-        // Verificar si el usuario ya existe
-        const existingUser = users.find(u => u.email === email);
-        
-        if (existingUser) {
-          registerError.textContent = 'Ya existe un usuario con este correo electrónico';
+      async function register(name, email, password) {
+        try {
+          const response = await fetch('/api/auth/register', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            credentials: 'include',
+            body: JSON.stringify({ name, email, password })
+          });
+
+          const data = await response.json();
+
+          if (response.ok) {
+            // Mostrar mensaje de éxito
+            registerSuccess.textContent = '¡Cuenta creada exitosamente!';
+            registerSuccess.style.display = 'block';
+
+            // Actualizar interfaz después de un breve retraso
+            setTimeout(() => {
+              closeModals();
+              checkAuthStatus();
+            }, 1500);
+
+            return true;
+          } else {
+            // Mostrar mensaje de error
+            if (data.error === 'email_exists') {
+              registerError.textContent = 'Ya existe un usuario con este correo electrónico';
+            } else {
+              registerError.textContent = data.error || 'Error al crear la cuenta';
+            }
+            registerError.style.display = 'block';
+            return false;
+          }
+        } catch (error) {
+          console.error('Error during registration:', error);
+          registerError.textContent = 'Error de conexión. Inténtalo de nuevo.';
           registerError.style.display = 'block';
           return false;
         }
-        
-        // Crear nuevo usuario
-        const newUser = {
-          id: Date.now().toString(),
-          name,
-          email,
-          password,
-          registrationDate: new Date().toISOString()
-        };
-        
-        // Guardar usuario
-        users.push(newUser);
-        localStorage.setItem('users', JSON.stringify(users));
-        
-        // Iniciar sesión automáticamente
-        localStorage.setItem('currentUser', JSON.stringify(newUser));
-        
-        // Mostrar mensaje de éxito
-        registerSuccess.textContent = '¡Cuenta creada exitosamente!';
-        registerSuccess.style.display = 'block';
-        
-        // Actualizar interfaz después de un breve retraso
-        setTimeout(() => {
-          closeModals();
-          checkAuthStatus();
-        }, 1500);
-        
-        return true;
       }
 
       // Cerrar sesión
-      function logout() {
-        localStorage.removeItem('currentUser');
+      async function logout() {
+        try {
+          await fetch('/api/auth/logout', {
+            method: 'POST',
+            credentials: 'include'
+          });
+        } catch (error) {
+          console.error('Error during logout:', error);
+        }
         checkAuthStatus();
       }
 
@@ -213,10 +248,17 @@
       // Funcionalidad del carrito
       const cartIcon = document.getElementById('cart-icon');
       if (cartIcon) {
-        cartIcon.addEventListener('click', function() {
+        cartIcon.addEventListener('click', async function() {
           // Verificar si el usuario está autenticado
-          const user = JSON.parse(localStorage.getItem('currentUser'));
-          if (!user) {
+          try {
+            const response = await fetch('/api/auth/me', { credentials: 'include' });
+            const data = await response.json();
+            if (!data.user) {
+              alert('Por favor, inicia sesión para ver tu carrito.');
+              showLoginModal();
+              return;
+            }
+          } catch (error) {
             alert('Por favor, inicia sesión para ver tu carrito.');
             showLoginModal();
             return;
@@ -229,10 +271,17 @@
       // Funcionalidad del carrito en el footer
       const cartIconFooter = document.getElementById('cart-icon-footer');
       if (cartIconFooter) {
-        cartIconFooter.addEventListener('click', function() {
+        cartIconFooter.addEventListener('click', async function() {
           // Verificar si el usuario está autenticado
-          const user = JSON.parse(localStorage.getItem('currentUser'));
-          if (!user) {
+          try {
+            const response = await fetch('/api/auth/me', { credentials: 'include' });
+            const data = await response.json();
+            if (!data.user) {
+              alert('Por favor, inicia sesión para ver tu carrito.');
+              showLoginModal();
+              return;
+            }
+          } catch (error) {
             alert('Por favor, inicia sesión para ver tu carrito.');
             showLoginModal();
             return;

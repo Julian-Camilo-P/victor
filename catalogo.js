@@ -374,10 +374,20 @@ document.addEventListener('DOMContentLoaded', function () {
     // Funcionalidad del carrito
     const cartIcon = document.getElementById('cart-icon');
     if (cartIcon) {
-      cartIcon.addEventListener('click', function() {
-        // Verificar si el usuario está autenticado
-        const user = JSON.parse(localStorage.getItem('currentUser'));
-        if (!user) {
+      cartIcon.addEventListener('click', async function() {
+        // Verificar autenticación con API
+        try {
+          const response = await fetch('/api/auth/me', {
+            credentials: 'include'
+          });
+          const data = await response.json();
+          if (!data.user) {
+            alert('Por favor, inicia sesión para ver tu carrito.');
+            showLoginModal();
+            return;
+          }
+        } catch (error) {
+          console.error('Error checking auth:', error);
           alert('Por favor, inicia sesión para ver tu carrito.');
           showLoginModal();
           return;
@@ -541,16 +551,26 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Funcionalidad para agregar al carrito
     document.querySelectorAll('.btn-agregar-carrito').forEach(boton => {
-        boton.addEventListener('click', function () {
+        boton.addEventListener('click', async function () {
             const productoId = this.getAttribute('data-producto');
             const producto = productos[productoId];
 
-            // Verificar si el usuario está autenticado
-            const user = JSON.parse(localStorage.getItem('currentUser'));
-            if (!user) {
+            // Verificar autenticación con API
+            try {
+              const response = await fetch('/api/auth/me', {
+                credentials: 'include'
+              });
+              const data = await response.json();
+              if (!data.user) {
                 alert('Por favor, inicia sesión para agregar productos al carrito.');
                 showLoginModal();
                 return;
+              }
+            } catch (error) {
+              console.error('Error checking auth:', error);
+              alert('Por favor, inicia sesión para agregar productos al carrito.');
+              showLoginModal();
+              return;
             }
 
             // Agregar al carrito
@@ -586,17 +606,27 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // Event listener para el botón de agregar al carrito en el modal
-    document.getElementById('agregar-carrito-modal').addEventListener('click', function () {
+    document.getElementById('agregar-carrito-modal').addEventListener('click', async function () {
         const productoId = document.querySelector('.btn-detalle.active')?.getAttribute('data-producto');
         if (productoId) {
             const producto = productos[productoId];
 
-            // Verificar si el usuario está autenticado
-            const user = JSON.parse(localStorage.getItem('currentUser'));
-            if (!user) {
+            // Verificar autenticación con API
+            try {
+              const response = await fetch('/api/auth/me', {
+                credentials: 'include'
+              });
+              const data = await response.json();
+              if (!data.user) {
                 alert('Por favor, inicia sesión para agregar productos al carrito.');
                 showLoginModal();
                 return;
+              }
+            } catch (error) {
+              console.error('Error checking auth:', error);
+              alert('Por favor, inicia sesión para agregar productos al carrito.');
+              showLoginModal();
+              return;
             }
 
             agregarAlCarrito(productoId, producto);
@@ -615,19 +645,28 @@ document.addEventListener('DOMContentLoaded', function () {
     // Botón "Comprar Ahora" del modal: guarda pedido y redirige a checkout
     const btnComprarAhora = document.getElementById('comprar-ahora');
     if (btnComprarAhora) {
-        btnComprarAhora.addEventListener('click', function () {
+        btnComprarAhora.addEventListener('click', async function () {
             const productoId = document.querySelector('.btn-detalle.active')?.getAttribute('data-producto');
             if (!productoId) return;
 
             const producto = productos[productoId];
 
-            // Verificar autenticación
-            const user = JSON.parse(localStorage.getItem('currentUser'));
-            if (!user) {
+            // Verificar autenticación con API
+            try {
+              const response = await fetch('/api/auth/me', {
+                credentials: 'include'
+              });
+              const data = await response.json();
+              if (!data.user) {
                 alert('Por favor, inicia sesión para realizar una compra.');
-                // Mostrar modal de login definido en este archivo
                 showLoginModal();
                 return;
+              }
+            } catch (error) {
+              console.error('Error checking auth:', error);
+              alert('Por favor, inicia sesión para realizar una compra.');
+              showLoginModal();
+              return;
             }
 
             // Parsear precio numérico (ej: "$125.000" -> 125000)
@@ -654,15 +693,25 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 // En la función que maneja el botón "Comprar ahora", agregar:
-function comprarAhora(producto) {
-  // Verificar si el usuario está autenticado
-  const user = JSON.parse(localStorage.getItem('currentUser'));
-  if (!user) {
+async function comprarAhora(producto) {
+  // Verificar autenticación con API
+  try {
+    const response = await fetch('/api/auth/me', {
+      credentials: 'include'
+    });
+    const data = await response.json();
+    if (!data.user) {
+      alert('Por favor, inicia sesión para realizar una compra.');
+      showLoginModal();
+      return;
+    }
+  } catch (error) {
+    console.error('Error checking auth:', error);
     alert('Por favor, inicia sesión para realizar una compra.');
-    // Aquí podrías redirigir a la página de login
+    showLoginModal();
     return;
   }
-  
+
   // Crear objeto de pedido
   const pedido = {
     tipo: 'catalogo',
@@ -671,10 +720,10 @@ function comprarAhora(producto) {
     total: producto.precio,
     fecha: new Date().toISOString()
   };
-  
+
   // Guardar pedido en localStorage
   localStorage.setItem('pedidoActual', JSON.stringify(pedido));
-  
+
   // Redirigir a checkout
   window.location.href = 'checkout.html';
 }
