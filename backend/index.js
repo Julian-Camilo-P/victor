@@ -55,3 +55,42 @@ app.use(cors({ origin: true, credentials: true }));
     process.exit(1);
   }
 })();
+
+
+// ============== 1. CONFIGURACIÓN DE PROXY Y CORS ==============
+
+// 1A. Confiar en el proxy: NECESARIO en plataformas como Railway
+// Esto permite que Express sepa que la conexión es HTTPS (segura)
+app.set('trust proxy', 1); // <--- DEBE SER 1
+
+// 1B. Configuración de CORS
+// Reemplaza <TU_FRONTEND_URL> con tu URL de Vercel (victor-g5w4xavs4-...)
+const corsOptions = {
+    // Usamos la variable de entorno que ya configuramos en Railway
+    origin: process.env.FRONTEND_URL, 
+    // ESTO es crucial para permitir el intercambio de cookies de sesión
+    credentials: true 
+};
+app.use(cors(corsOptions));
+
+
+// ============== 2. CONFIGURACIÓN DE SESIÓN (COOKIES) ==============
+
+app.use(session({
+    // ... otras opciones de sesión ...
+    
+    cookie: {
+        // secure: true - OBLIGATORIO cuando se usa HTTPS (Railway lo hace).
+        // Usamos NODE_ENV para que en desarrollo no falle:
+        secure: process.env.NODE_ENV === 'production' ? true : false,
+        
+        // sameSite: 'none' - OBLIGATORIO para peticiones entre diferentes dominios (Vercel -> Railway)
+        sameSite: 'none', 
+        
+        // ... otras propiedades de cookie (ej. maxAge)
+    }
+}));
+
+
+// ... AHORA VIENEN TUS RUTAS ...
+// app.get('/', (req, res) => { ... });
