@@ -22,33 +22,9 @@ const PORT = process.env.PORT || 3000;
 app.set('trust proxy', 1);
 
 // B. Configuración de CORS con la URL de Vercel y credenciales (Cookies)
-const allowedOrigins = [
-    'http://localhost:3000',
-    'http://localhost:5173',
-    'https://victor-beta.vercel.app', 
-    process.env.FRONTEND_URL, 
-];
-
 const corsOptions = {
-    // Usamos una función para aceptar tanto URLs fijas como URLs dinámicas de Vercel
-    origin: function (origin, callback) {
-        // Permitir solicitudes sin origen (como postman, servicios internos)
-        if (!origin) return callback(null, true);
-        
-        // 1. Aceptar orígenes fijos (localhost, FRONTEND_URL, victor-beta.vercel.app)
-        if (allowedOrigins.includes(origin)) {
-            return callback(null, true);
-        }
-
-        // 2. Aceptar CUALQUIER subdominio de Vercel (fix para URLs dinámicas)
-        if (origin.endsWith('.vercel.app')) {
-            return callback(null, true);
-        }
-
-        // Si no cumple ninguna condición, bloquear y loguear
-        console.error(`CORS BLOCKED: Origin ${origin} not in allowed list.`);
-        callback(new Error('Not allowed by CORS'));
-    },
+    // Usamos la variable FRONTEND_URL configurada en Railway
+    origin: process.env.FRONTEND_URL,
     credentials: true
 };
 app.use(cors(corsOptions));
@@ -73,7 +49,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
             name: 'victorem.sid',
             secret: process.env.SESSION_SECRET || 'change-me-in-prod',
             
-            // Propiedades OBLIGATORIAS para evitar fallos/cierre (SIGTERM)
+            // CORREGIDO: Propiedades OBLIGATORIAS para evitar fallos/cierre (SIGTERM)
             resave: false,
             saveUninitialized: false, 
             
@@ -96,17 +72,18 @@ app.use(bodyParser.urlencoded({ extended: true }));
         if (authRoutes) app.use('/api/auth', authRoutes);
         if (ordersRoutes) app.use('/api/orders', ordersRoutes);
 
-        // Serve static frontend from parent directory
+        // Serve static frontend from parent directory (esto no es necesario si Vercel sirve el frontend)
+        // Pero lo mantenemos si el backend necesita servir archivos estáticos internos
         const staticPath = path.join(__dirname, '..');
         app.use(express.static(staticPath));
 
-        // Fallback
+        // Fallback (solo si el frontend se sirve desde el backend, pero mantenemos por compatibilidad)
         app.get('*', (req, res, next) => {
             if (req.path.startsWith('/api/')) return next();
             res.sendFile(path.join(staticPath, 'index.html'));
         });
 
-        // Escuchar en 0.0.0.0 para compatibilidad total con Railway
+        // CORREGIDO: Escuchar en 0.0.0.0 para compatibilidad total con Railway
         app.listen(PORT, '0.0.0.0', () => console.log(`Backend listening on http://0.0.0.0:${PORT}`));
         
     } catch (err) {
