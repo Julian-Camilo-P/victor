@@ -92,5 +92,16 @@ app.use(session({
 }));
 
 
-// ... AHORA VIENEN TUS RUTAS ...
-// app.get('/', (req, res) => { ... });
+app.use(session({
+    secret: process.env.SESSION_SECRET,
+    // NECESITAS ESTOS DOS PARA SILENCIAR EL ERROR:
+    resave: false, 
+    saveUninitialized: false, 
+    
+    // Y la configuración de seguridad OBLIGATORIA:
+    cookie: {
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'none', 
+        // ...
+    },
+}));
