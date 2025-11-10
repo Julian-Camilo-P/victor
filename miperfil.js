@@ -8,60 +8,37 @@
       const perfilContenido = document.getElementById('perfil-contenido');
       
       // Verificar si el usuario está autenticado
-      async function checkAuthStatus() {
-        try {
-          const response = await fetch('/api/auth/me', {
-            credentials: 'include'
-          });
-          const data = await response.json();
-          const user = data.user;
-
-          // Actualizar navegación
-          if (user) {
-            authNav.innerHTML = `
-              <div class="user-menu">
-                <button class="user-menu-btn">
-                  <span>${user.name}</span>
-                  <span>▼</span>
-                </button>
-                <div class="user-dropdown">
-                  <a href="miperfil.html" style="color: #d4af37;">Mi Perfil</a>
-                  <a href="#" id="logoutLink">Cerrar Sesión</a>
-                </div>
+      function checkAuthStatus() {
+        const user = JSON.parse(localStorage.getItem('currentUser'));
+        
+        // Actualizar navegación
+        if (user) {
+          authNav.innerHTML = `
+            <div class="user-menu">
+              <button class="user-menu-btn">
+                <span>${user.name}</span>
+                <span>▼</span>
+              </button>
+              <div class="user-dropdown">
+                <a href="miperfil.html" style="color: #d4af37;">Mi Perfil</a>
+                <a href="#" id="logoutLink">Cerrar Sesión</a>
               </div>
-            `;
-
-            // Agregar evento para cerrar sesión
-            document.getElementById('logoutLink').addEventListener('click', logout);
-
-            // Cargar contenido del perfil
-            cargarPerfilUsuario(user);
-          } else {
-            authNav.innerHTML = `
-              <li><a href="#" id="loginLink">Iniciar Sesión</a></li>
-            `;
-            document.getElementById('loginLink').addEventListener('click', function() {
-              window.location.href = 'index.html#login';
-            });
-
-            // Mostrar mensaje de no autenticado
-            perfilContenido.innerHTML = `
-              <div class="no-auth-message">
-                <h2>Acceso Restringido</h2>
-                <p>Debes iniciar sesión para acceder a tu perfil.</p>
-                <a href="index.html" class="btn">Ir a Inicio de Sesión</a>
-              </div>
-            `;
-          }
-        } catch (error) {
-          console.error('Error checking auth status:', error);
+            </div>
+          `;
+          
+          // Agregar evento para cerrar sesión
+          document.getElementById('logoutLink').addEventListener('click', logout);
+          
+          // Cargar contenido del perfil
+          cargarPerfilUsuario(user);
+        } else {
           authNav.innerHTML = `
             <li><a href="#" id="loginLink">Iniciar Sesión</a></li>
           `;
           document.getElementById('loginLink').addEventListener('click', function() {
             window.location.href = 'index.html#login';
           });
-
+          
           // Mostrar mensaje de no autenticado
           perfilContenido.innerHTML = `
             <div class="no-auth-message">
@@ -74,15 +51,8 @@
       }
       
       // Cerrar sesión
-      async function logout() {
-        try {
-          await fetch('/api/auth/logout', {
-            method: 'POST',
-            credentials: 'include'
-          });
-        } catch (error) {
-          console.error('Error during logout:', error);
-        }
+      function logout() {
+        localStorage.removeItem('currentUser');
         window.location.href = 'miperfil.html';
       }
       
@@ -450,7 +420,7 @@
         // Proceder al pago
         const procederPagoBtn = document.getElementById('proceder-pago');
         if (procederPagoBtn) {
-            procederPagoBtn.addEventListener('click', async function() {
+            procederPagoBtn.addEventListener('click', function() {
               // Obtener carrito actual
               const carrito = JSON.parse(localStorage.getItem('carrito')) || [];
 
@@ -459,19 +429,9 @@
                 return;
               }
 
-              // Verificar autenticación con API
-              try {
-                const response = await fetch('/api/auth/me', {
-                  credentials: 'include'
-                });
-                const data = await response.json();
-                if (!data.user) {
-                  alert('Por favor, inicia sesión para proceder al pago.');
-                  window.location.href = 'index.html#login';
-                  return;
-                }
-              } catch (error) {
-                console.error('Error checking auth:', error);
+              // Verificar autenticación
+              const user = JSON.parse(localStorage.getItem('currentUser'));
+              if (!user) {
                 alert('Por favor, inicia sesión para proceder al pago.');
                 window.location.href = 'index.html#login';
                 return;
@@ -642,23 +602,13 @@
         }
       };
       
-      window.comprarAhora = async function(index) {
+      window.comprarAhora = function(index) {
         const carrito = JSON.parse(localStorage.getItem('carrito')) || [];
         const producto = carrito[index];
         if (producto) {
-          // Verificar autenticación con API
-          try {
-            const response = await fetch('/api/auth/me', {
-              credentials: 'include'
-            });
-            const data = await response.json();
-            if (!data.user) {
-              alert('Por favor, inicia sesión para realizar una compra.');
-              window.location.href = 'index.html#login';
-              return;
-            }
-          } catch (error) {
-            console.error('Error checking auth:', error);
+          // Verificar autenticación
+          const user = JSON.parse(localStorage.getItem('currentUser'));
+          if (!user) {
             alert('Por favor, inicia sesión para realizar una compra.');
             window.location.href = 'index.html#login';
             return;
