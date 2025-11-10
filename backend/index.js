@@ -12,7 +12,7 @@ try { ordersRoutes = require('./routes/orders'); } catch (e) { ordersRoutes = nu
 try { authRoutes = require('./routes/auth'); } catch (e) { authRoutes = null; }
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 6543;
 
 // =======================================================
 // 1. CONFIGURACIÓN INICIAL Y SEGURIDAD (Se ejecuta primero)
@@ -91,3 +91,4 @@ app.use(bodyParser.urlencoded({ extended: true }));
         process.exit(1);
     }
 })();
+
