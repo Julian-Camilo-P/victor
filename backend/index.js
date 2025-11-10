@@ -23,25 +23,31 @@ app.set('trust proxy', 1);
 
 // B. Configuración de CORS con la URL de Vercel y credenciales (Cookies)
 const allowedOrigins = [
-    process.env.FRONTEND_URL, 
-    // Añadimos explícitamente el dominio de Vercel para asegurar la conexión
-    'https://victor-beta.vercel.app', 
     'http://localhost:3000',
-    'http://localhost:5173', // Añade los puertos de desarrollo comunes
+    'http://localhost:5173',
+    'https://victor-beta.vercel.app', 
+    process.env.FRONTEND_URL, 
 ];
 
 const corsOptions = {
-    // Si la solicitud viene de una de las URLs permitidas, la acepta.
+    // Usamos una función para aceptar tanto URLs fijas como URLs dinámicas de Vercel
     origin: function (origin, callback) {
-        // Permitir solicitudes sin origen (como postman o servicios internos)
+        // Permitir solicitudes sin origen (como postman, servicios internos)
         if (!origin) return callback(null, true);
+        
+        // 1. Aceptar orígenes fijos (localhost, FRONTEND_URL, victor-beta.vercel.app)
         if (allowedOrigins.includes(origin)) {
-            callback(null, true);
-        } else {
-            // Loguear el origen no permitido para depuración
-            console.error(`CORS BLOCKED: Origin ${origin} not in allowed list.`);
-            callback(new Error('Not allowed by CORS'));
+            return callback(null, true);
         }
+
+        // 2. Aceptar CUALQUIER subdominio de Vercel (fix para URLs dinámicas)
+        if (origin.endsWith('.vercel.app')) {
+            return callback(null, true);
+        }
+
+        // Si no cumple ninguna condición, bloquear y loguear
+        console.error(`CORS BLOCKED: Origin ${origin} not in allowed list.`);
+        callback(new Error('Not allowed by CORS'));
     },
     credentials: true
 };
@@ -96,8 +102,6 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
         // Fallback
         app.get('*', (req, res, next) => {
-            // Si la ruta comienza con /api/ y no fue manejada por las rutas anteriores (auth, orders),
-            // significa que la ruta API no existe.
             if (req.path.startsWith('/api/')) return next();
             res.sendFile(path.join(staticPath, 'index.html'));
         });
