@@ -1,10 +1,9 @@
 const { Pool } = require('pg');
 require('dotenv').config();
+import postgres from 'postgres';
 
 const connectionString = process.env.DATABASE_URL;
-const pool = new Pool({
-  connectionString,
-});
+const pool = postgres(connectionString);
 
 async function init() {
   const client = await pool.connect();

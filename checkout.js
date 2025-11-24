@@ -129,69 +129,8 @@ document.addEventListener('DOMContentLoaded', function() {
     return nombres[claveDije] || "Desconocido";
   }
 
-  // Función para enviar pedido al backend
-  async function enviarPedidoBackend(pedidoData) {
-    try {
-      // Construir payload para enviar al backend
-      let items = [];
-      let total = 0;
-
-      if (pedidoData.tipo === 'carrito' && Array.isArray(pedidoData.productos)) {
-        items = pedidoData.productos.map(p => ({
-          product_id: p.id || null,
-          name: p.nombre,
-          image: p.imagen || null,
-          price: p.precio || 0,
-          quantity: p.cantidad || 1
-        }));
-        total = pedidoData.total || 0;
-      } else if (pedidoData.tipo === 'catalogo') {
-        items = [{
-          product_id: pedidoData.producto.id || null,
-          name: pedidoData.producto.nombre,
-          image: pedidoData.producto.imagen || null,
-          price: pedidoData.total || 0,
-          quantity: pedidoData.cantidad || 1
-        }];
-        total = pedidoData.total || 0;
-      } else if (pedidoData.tipo === 'personalizado') {
-        // Enviar detalles del producto personalizado como un ítem
-        items = [{
-          product_id: null,
-          name: pedidoData.tipoJoya === 'pulsera' ? 'Pulsera Personalizada' : 'Anillo Personalizado',
-          image: `imagenes/dijes/${pedidoData.detalles.dije}.jpg`,
-          price: pedidoData.total || 0,
-          quantity: 1
-        }];
-        total = pedidoData.total || 0;
-      }
-
-      // Enviar al endpoint /orders (ajustar ruta base si es necesario)
-      const response = await fetch('/api/orders', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        credentials: 'include', // Para enviar cookies/session
-        body: JSON.stringify({ items, total })
-      });
-
-      if (!response.ok) {
-        const error = await response.json();
-        console.error('Error en backend:', error);
-        throw new Error(error.error || 'Error desconocido');
-      }
-
-      const data = await response.json();
-      return data;
-    } catch (error) {
-      alert('Error al enviar el pedido al servidor: ' + error.message);
-      throw error;
-    }
-  }
-
   // Procesar pago
-  async function procesarPago() {
+  function procesarPago() {
     // Validar formulario
     if (!validarFormulario()) {
       alert('Por favor, completa todos los campos requeridos.');
@@ -205,31 +144,25 @@ document.addEventListener('DOMContentLoaded', function() {
       return;
     }
     
+    // Simular procesamiento de pago
     btnPagar.disabled = true;
     btnPagar.textContent = 'Procesando...';
-
-    try {
-      // Enviar pedido al backend
-      const resultado = await enviarPedidoBackend(pedido);
-      
-      // Generar número de pedido con id retornado o aleatorio si no hay
-      const numPedido = resultado.orderId || Math.floor(100000 + Math.random() * 900000);
+    
+    // Simular demora de procesamiento
+    setTimeout(function() {
+      // Generar número de pedido aleatorio
+      const numPedido = Math.floor(100000 + Math.random() * 900000);
       numeroPedido.textContent = numPedido;
-
+      
+      // Mostrar mensaje de éxito
       mensajeExito.classList.add('activo');
-
-      // Guardar pedido en historial local para mostrar al usuario
+      
+      // Guardar pedido en historial
       guardarEnHistorial(numPedido);
-
-      // Limpiar pedido actual de localStorage
+      
+      // Limpiar pedido actual
       localStorage.removeItem('pedidoActual');
-
-    } catch (error) {
-      // Error ya manejado en enviarPedidoBackend
-    } finally {
-      btnPagar.disabled = false;
-      btnPagar.textContent = 'Pagar';
-    }
+    }, 2000);
   }
 
   // Validar formulario

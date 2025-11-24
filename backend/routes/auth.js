@@ -52,17 +52,4 @@ router.get('/me', (req, res) => {
   res.json({ user: req.session.user || null });
 });
 
-router.get('/users', async (req, res) => {
-  if (!req.session.user) {
-    return res.status(401).json({ error: 'unauthorized' });
-  }
-  try {
-    const result = await db.pool.query('SELECT id, name, email, created_at FROM users ORDER BY created_at DESC');
-    res.json({ users: result.rows });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: 'internal_error' });
-  }
-});
-
 module.exports = router;
