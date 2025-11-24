@@ -2,10 +2,11 @@
   "name": "victorem-backend",
   "version": "1.0.0",
   "description": "Victorem backend (Express + Postgres)",
+  "type": "commonjs",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js",
-    "dev": "nodemon index.js"
+    "start": "node backend/index.js",
+    "dev": "nodemon backend/index.js"
   },
   "dependencies": {
     "bcrypt": "^5.1.0",
