@@ -1,9 +1,8 @@
 const { Pool } = require('pg');
 require('dotenv').config();
-import postgres from 'postgres';
 
-const connectionString = process.env.DATABASE_URL;
-const pool = postgres(connectionString);
+const connectionString = process.env.DATABASE_URL || 'postgres://postgres:postgres@localhost:5432/victorem';
+const pool = new Pool({ connectionString, ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false });
 
 async function init() {
   const client = await pool.connect();
